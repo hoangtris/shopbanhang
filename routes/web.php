@@ -53,3 +53,35 @@ Route::prefix('categories')->group(function () {
         'uses' => 'CategoryController@destroy'
     ]);
 });
+
+Route::prefix('products')->group(function () {
+    Route::get('/',[
+        'as' => 'products.index',
+        'uses' => 'ProductController@index'
+    ]);
+
+    Route::get('/create',[
+        'as' => 'products.create',
+        'uses' => 'ProductController@create'
+    ]);
+
+    Route::post('/store',[
+        'as' => 'products.store',
+        'uses' => 'ProductController@store'
+    ]);
+
+    Route::get('/edit/{id}',[
+        'as' => 'products.edit',
+        'uses' => 'ProductController@edit'
+    ]);
+
+    Route::post('/update/{id}',[
+        'as' => 'products.update',
+        'uses' => 'ProductController@update'
+    ]);
+
+    Route::get('/destroy/{id}',[
+        'as' => 'products.destroy',
+        'uses' => 'ProductController@destroy'
+    ]);
+});

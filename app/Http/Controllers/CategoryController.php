@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use App\Category;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 
 class CategoryController extends Controller
@@ -23,7 +25,7 @@ class CategoryController extends Controller
     }
     public function index()
     {
-        $data = Category::all();
+        $data = Category::orderBy('id', 'asc')->get();
         $this->categoryRecursive(0);
 
         return view('category.index', compact('data'));
@@ -67,6 +69,13 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'slug' => 'max:255',
+        ],[
+            'name.required' => 'A name is required',
+        ])->validate();
+
         Category::create([
             'name'=>$request->name,
             'slug'=>Str::slug($request->name, '-'),
@@ -99,6 +108,7 @@ class CategoryController extends Controller
     public function edit($id)
     {
         //
+
         $category = Category::findOrFail($id);
         $htmlOption = $this->categoryRecursive(0);
         return view('category.edit', compact('category','htmlOption'));
@@ -117,6 +127,9 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
  
         $category->update($request->all());
+
+        Category::where('id',$id)->update(['slug'=>Str::slug($request->name, '-')]);
+
         \Session::flash('flash_message', 'Update category successfully.');
         return redirect()->route('categories.index', [$category->id]);
     }
